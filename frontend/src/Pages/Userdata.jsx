@@ -1,19 +1,41 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { MdEdit, MdDelete } from "react-icons/md";
+import { Link } from "react-router-dom"; // Ensure you have react-router-dom installed
 
 const Userdata = () => {
   const [users, setUser] = useState([]);
+  const [edituser, setEditUser] = useState(null);
+  const [deleteuser, setDeleteUser] = useState(null);
 
   useEffect(() => {
     axios
       .get("http://localhost:5000/getuser")
-      .then((res) => setUser(res.data))
+      .then((res) => {
+        setUser(res.data);
+      })
       .catch((error) => {
-        console.log("Error!!", error);
+        console.error("Error fetching users:", error);
       });
   }, []);
-  const handleEdit = () => {};
+
+  const handleEdit = async (users) => {
+    setEditUser(users);
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/updateuser/${users._id}`,
+        {
+          name: users.name,
+          email: users.email,
+          address: users.address,
+          contact: users.contact,
+        }
+      );
+      console.log("users updated", response.data);
+    } catch (error) {
+      console.log("error updating user", error);
+    }
+  };
   const handleDelete = () => {};
   return (
     <div className="pt-20 px-4">
@@ -57,14 +79,14 @@ const Userdata = () => {
                     {user.contact}
                   </td>
                   <td className="border px-4 py-2 flex gap-2 justify-center">
+                    <Link to={`/update/${user._id}`}>
+                      <button className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded">
+                        <MdEdit />
+                      </button>
+                    </Link>
+
                     <button
-                      onClick={() => handleEdit(user)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
-                    >
-                      <MdEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(user._id)}
+                      // onClick={() => handleDelete(user._id)}
                       className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
                     >
                       <MdDelete />
