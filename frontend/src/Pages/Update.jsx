@@ -13,14 +13,6 @@ const Update = () => {
     contact: "",
   });
 
-  // Fetch user data on mount
-  useEffect(() => {
-    axios
-      .get(`http://localhost:5000/getuser/${id}`)
-      .then((res) => setUser(res.data))
-      .catch((err) => console.error("Error fetching user:", err));
-  }, [id]);
-
   const handleChange = (e) => {
     setUser((prevUser) => ({
       ...prevUser,
@@ -28,16 +20,28 @@ const Update = () => {
     }));
   };
 
+  // Fetch user data on mount
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/updateuser/" + id)
+      .then((res) => setUser(res.data))
+      // .then((res) => {
+      //   console.log(res.data);
+      // })
+      .catch((err) => console.error("Error fetching user:", err));
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await axios.put(`http://localhost:5000/updateuser/${id}`, user);
-      alert("User updated successfully!");
-      navigate("/userdata");
-    } catch (error) {
-      console.error("Update failed:", error);
-      alert("Failed to update user.");
-    }
+    axios
+      .put("http://localhost:5000/updateduser/" + id, user)
+      .then((result) => {
+        // console.log(result.data);
+        navigate("/userdata");
+      })
+      .catch((error) => {
+        console.log("error adding the user!");
+      });
   };
 
   return (

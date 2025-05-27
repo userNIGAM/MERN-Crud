@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { MdEdit, MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom"; // Ensure you have react-router-dom installed
+import { useNavigate } from "react-router-dom"; // import this
 
 const Userdata = () => {
   const [users, setUser] = useState([]);
   const [edituser, setEditUser] = useState(null);
   const [deleteuser, setDeleteUser] = useState(null);
+  const navigate = useNavigate(); // initialize it
 
   useEffect(() => {
     axios
@@ -20,26 +22,42 @@ const Userdata = () => {
   }, []);
 
   const handleEdit = async (users) => {
-    setEditUser(users);
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/updateuser/${users._id}`,
-        {
-          name: users.name,
-          email: users.email,
-          address: users.address,
-          contact: users.contact,
-        }
-      );
-      console.log("users updated", response.data);
-    } catch (error) {
-      console.log("error updating user", error);
-    }
+    // setEditUser(users);
+    // try {
+    //   const response = await axios.put(
+    //     `http://localhost:5000/updateuser/${users._id}`,
+    //     {
+    //       name: users.name,
+    //       email: users.email,
+    //       address: users.address,
+    //       contact: users.contact,
+    //     }
+    //   );
+    //   console.log("users updated", response.data);
+    // } catch (error) {
+    //   console.log("error updating user", error);
+    // }
   };
-  const handleDelete = () => {};
+  const handleDelete = (id) => {
+    axios
+      .delete("http://localhost:5000/deleteuser/" + id)
+      .then((result) => {
+        console.log(result);
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <div className="pt-20 px-4">
       {" "}
+      <button
+        onClick={() => navigate("/")}
+        className="mb-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        ⬅ Back to Home
+      </button>
       {/* top padding to avoid overlap with back button */}
       <h2 className="text-3xl font-semibold mb-6 text-center">User Data</h2>
       <div className="overflow-x-auto">
@@ -86,7 +104,7 @@ const Userdata = () => {
                     </Link>
 
                     <button
-                      // onClick={() => handleDelete(user._id)}
+                      onClick={(e) => handleDelete(user._id)}
                       className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
                     >
                       <MdDelete />
